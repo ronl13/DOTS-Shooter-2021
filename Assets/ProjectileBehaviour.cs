@@ -1,6 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class ProjectileBehaviour : MonoBehaviour, IConvertGameObjectToEntity
 {
     [Header ("Movement")]
@@ -20,6 +21,10 @@ public class ProjectileBehaviour : MonoBehaviour, IConvertGameObjectToEntity
         //basic movement with rigidbody
         Vector3 movement = transform.forward * speed * Time.deltaTime;
         rb.MovePosition(transform.position + movement);
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        Destroy(gameObject);
     }
 
     //converts this gameobject into an entity (IConvertGameObjectToEntity)

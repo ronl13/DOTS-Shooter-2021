@@ -24,17 +24,24 @@ public class PlayerShooting : MonoBehaviour
 
     EntityManager manager;
     Entity bulletEntity;
+    BlobAssetStore blobAssetStore;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    private void Awake() {
         //World.DefaultGameObjectInjectionWorld = the current active world
         manager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        bulletEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(bulletPrefab, 
-        GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore()));
-        //bulletEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(bulletPrefab, new GameObjectConversionSettings()
-        //{ DestinationWorld = World.DefaultGameObjectInjectionWorld });
+        blobAssetStore = new BlobAssetStore();
+
+        GameObjectConversionSettings settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, blobAssetStore);
+        bulletEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(bulletPrefab, settings);
         //bullet prefab will be converted into bullet entity
+    }
+    
+    void Start()
+    {
+        
+        //bulletEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(bulletPrefab, 
+        //GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore()));
+        
         //the gameobject conversion settings set the destination world to the current world
         timer = fireRate;
     }
@@ -62,7 +69,7 @@ public class PlayerShooting : MonoBehaviour
                 else SpawnBullet(bulletRotation);
             }
 
-            fireRate = 0f;
+            timer = 0f;
         }
     }
 
@@ -113,6 +120,10 @@ public class PlayerShooting : MonoBehaviour
 
         manager.SetComponentData(bullet, new Translation { Value = shootPoint.position });
         manager.SetComponentData(bullet, new Rotation { Value = Quaternion.Euler(rotation) });
+
+        //bullet counter stuff
+        currentBullets += 1;
+        Invoke("RemoveBulletFromCounter", 2f);
     }
 
     void SpawnBulletSpreadECS(Vector3 rotation)
@@ -130,9 +141,9 @@ public class PlayerShooting : MonoBehaviour
         //instantiates the needed bullet entities and stores them in the array
         manager.Instantiate(bulletEntity, bullets);
 
-        for (int i = min; i < max; i++)
+        for (int x = min; x < max; x++)
         {
-            tempRot.x = (rotation.x + 3 * i) % 360;
+            tempRot.x = (rotation.x + 3 * x) % 360;
 
             for (int y = min; y < max; y++)
             {
@@ -141,7 +152,7 @@ public class PlayerShooting : MonoBehaviour
                 Entity bullet = manager.Instantiate(bulletEntity);
 
                 manager.SetComponentData(bullets[index], new Translation { Value = shootPoint.position });
-                manager.SetComponentData(bullets[index], new Rotation { Value = Quaternion.Euler(rotation) });
+                manager.SetComponentData(bullets[index], new Rotation { Value = Quaternion.Euler(tempRot) });
 
                 index++;    //updates index
 
@@ -150,7 +161,6 @@ public class PlayerShooting : MonoBehaviour
                 Invoke("RemoveBulletFromCounter", 2f);
             }
         }
-
         bullets.Dispose(); //native arrays don't know when they're done being used, this will tell the array to clean up to avoid memory leaks
     }
 
