@@ -23,10 +23,6 @@ public class ProjectileBehaviour : MonoBehaviour, IConvertGameObjectToEntity
         rb.MovePosition(transform.position + movement);
     }
 
-    private void OnTriggerEnter(Collider other) {
-        Destroy(gameObject);
-    }
-
     //converts this gameobject into an entity (IConvertGameObjectToEntity)
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
