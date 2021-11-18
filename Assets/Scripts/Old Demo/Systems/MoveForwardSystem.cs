@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 //this system updates all entities in the scene with the MoveForwardComponent
+[BurstCompile]
 public class MoveForwardSystem : SystemBase
 {
     protected override void OnUpdate()
@@ -15,9 +16,14 @@ public class MoveForwardSystem : SystemBase
 
         //schedules a job to move forward over delta time
         //ref = read/write values, in = read only
-        Entities.WithName("MoveForwardComponent").ForEach((ref Translation pos, ref Rotation rot, in MoveSpeed speed) =>
+        /*Entities.WithName("MoveForwardComponent").ForEach((ref Translation pos, ref Rotation rot, in MoveSpeed speed) =>
         {
             pos.Value = pos.Value + (deltaTime * speed.Value * math.forward(rot.Value));
-        }).ScheduleParallel();      //add this to schedule the job
+        }).ScheduleParallel();      //add this to schedule the job*/
+
+        Entities.ForEach((Entity e, ref Translation pos, ref Rotation rot, in MoveSpeed speed, in MoveForwardComponent moveForwardComponent) =>
+        {
+            pos.Value = pos.Value + (deltaTime * speed.Value * math.forward(rot.Value));
+        }).ScheduleParallel();
     }
 }

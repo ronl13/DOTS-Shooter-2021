@@ -35,6 +35,10 @@ public class PlayerShooting : MonoBehaviour
         bulletEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(bulletPrefab, settings);
         //bullet prefab will be converted into bullet entity
     }
+
+    private void OnDestroy() {
+        blobAssetStore.Dispose();
+    }
     
     void Start()
     {
@@ -46,7 +50,6 @@ public class PlayerShooting : MonoBehaviour
         timer = fireRate;
     }
 
-    // Update is called once per frame
     void Update()
     {
         timer += Time.deltaTime;
@@ -58,14 +61,14 @@ public class PlayerShooting : MonoBehaviour
             Vector3 bulletRotation = shootPoint.rotation.eulerAngles;
             bulletRotation.x = 0f;
 
-            if (spreadShot)
+            if (spreadShot == true)
             {
-                if (UseECS) SpawnBulletSpreadECS(bulletRotation);
+                if (UseECS == true) SpawnBulletSpreadECS(bulletRotation);
                 else SpawnBulletSpread(bulletRotation);
             }
             else
             {
-                if (UseECS) SpawnBulletECS(bulletRotation);
+                if (UseECS == true) SpawnBulletECS(bulletRotation);
                 else SpawnBullet(bulletRotation);
             }
 
@@ -157,8 +160,8 @@ public class PlayerShooting : MonoBehaviour
                 index++;    //updates index
 
                 //bullet counter stuff
-                currentBullets += 1;
-                Invoke("RemoveBulletFromCounter", 2f);
+                //currentBullets += 1;
+                //Invoke("RemoveBulletFromCounter", 2f);
             }
         }
         bullets.Dispose(); //native arrays don't know when they're done being used, this will tell the array to clean up to avoid memory leaks

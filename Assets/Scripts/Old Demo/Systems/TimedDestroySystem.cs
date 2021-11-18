@@ -5,7 +5,8 @@ using Unity.Collections;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateAfter(typeof(MoveForwardSystem))]        //this system will run its update after the MoveForwardSystem
+//[UpdateAfter(typeof(MoveForwardSystem))]        //this system will run its update after the MoveForwardSystem
+[BurstCompile]
 public class TimedDestroySystem : SystemBase
 {
     BeginInitializationEntityCommandBufferSystem m_ecbSystem;
@@ -14,6 +15,7 @@ public class TimedDestroySystem : SystemBase
     {
         m_ecbSystem = World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
     }
+
 
     protected override void OnUpdate()
     {
@@ -24,7 +26,15 @@ public class TimedDestroySystem : SystemBase
 
         //schedules a job to delete all entities with the TimeToLive component after their timetolive value is 0
         //ref = read/write values, in = read only
+        /*
         Entities.WithName("TimeToLive").ForEach((Entity entity, int entityInQueryIndex, ref TimeToLive timeToLive) =>
+        {
+            timeToLive.Value -= deltaTime;
+            if (timeToLive.Value <= 0f) ecb.DestroyEntity(entityInQueryIndex, entity);
+        }).ScheduleParallel();      //add this to schedule the job
+        */
+
+        Entities.ForEach((Entity entity, int entityInQueryIndex, ref TimeToLive timeToLive) =>
         {
             timeToLive.Value -= deltaTime;
             if (timeToLive.Value <= 0f) ecb.DestroyEntity(entityInQueryIndex, entity);

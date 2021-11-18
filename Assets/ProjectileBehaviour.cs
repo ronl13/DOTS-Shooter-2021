@@ -10,17 +10,17 @@ public class ProjectileBehaviour : MonoBehaviour, IConvertGameObjectToEntity
     [Header ("Life Time")]
     public float lifeTime = 2f;
 
-    Rigidbody rb;
+    //Rigidbody rb;
 
     private void Start() {
-        rb = GetComponent<Rigidbody>();     //gets rigidbody component at the start
-        Destroy(gameObject, lifeTime);      //destroys gameobject after 2 seconds
+        //rb = GetComponent<Rigidbody>();     //gets rigidbody component at the start
+       // Destroy(gameObject, lifeTime);      //destroys gameobject after 2 seconds
     }
 
     private void Update() {
         //basic movement with rigidbody
-        Vector3 movement = transform.forward * speed * Time.deltaTime;
-        rb.MovePosition(transform.position + movement);
+        //Vector3 movement = transform.forward * speed * Time.deltaTime;
+        //rb.MovePosition(transform.position + movement);
     }
 
     //converts this gameobject into an entity (IConvertGameObjectToEntity)
